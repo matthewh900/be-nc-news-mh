@@ -17,3 +17,16 @@ exports.selectArticlesById = (article_id) => {
       }
     });
 };
+// SELECT animals.*, COUNT(northcoder_id) AS number_of_fans
+// FROM animals
+// LEFT JOIN northcoders ON northcoders.favourite_animal_id = animals.animal_id
+// GROUP BY animal_id
+exports.selectArticles = () => {
+  return db
+    .query(
+      "SELECT articles.*, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id"
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
+};
