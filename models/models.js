@@ -17,16 +17,39 @@ exports.selectArticlesById = (article_id) => {
       }
     });
 };
-// SELECT animals.*, COUNT(northcoder_id) AS number_of_fans
-// FROM animals
-// LEFT JOIN northcoders ON northcoders.favourite_animal_id = animals.animal_id
-// GROUP BY animal_id
-exports.selectArticles = () => {
-  return db
-    .query(
-      "SELECT articles.*, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id"
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+
+exports.selectArticles = (queries) => {
+    const sort_by = queries.sort_by
+    const order = queries.order
+
+    let sql = "SELECT articles.*, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id"
+    const args = []
+
+    if (sort_by){
+        const greenList = ["article_id", "created_at", "votes", "comment_count"]
+        if (greenList.includes(sort_by)){
+            sql += ` ORDER BY ${sort_by}`
+        }
+        if (order === "desc" || order === "asc"){
+            sql += ` ${order}`
+        }
+    } else {
+        return db.query(`${sql} ORDER BY created_at DESC`).then(({rows}) => {
+            return rows
+        })
+    }
+    console.log(sql)
+    return db.query(sql, args).then(({rows}) => {
+        return rows
+    })
 };
+
+
+
+//   return db
+//     .query(
+//       "SELECT articles.*, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY articles.created_at"
+//     )
+//     .then(({ rows }) => {
+//       return rows;
+//     });
