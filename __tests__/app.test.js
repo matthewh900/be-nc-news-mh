@@ -34,27 +34,69 @@ describe("GET /api/topics", () => {
   });
 });
 
-describe.only("GET /api/articles/:article_id", () => {
+describe("GET /api/articles/:article_id", () => {
   test("should respond with status code 200 and article with matching article_id property", () => {
-    return request(app).get("/api/articles/1").expect(200).then((res) => {
-      expect(res.body.article.hasOwnProperty("author")).toBe(true)
-      expect(res.body.article.hasOwnProperty("title")).toBe(true)
-      expect(res.body.article.hasOwnProperty("article_id")).toBe(true)
-      expect(res.body.article.hasOwnProperty("body")).toBe(true)
-      expect(res.body.article.hasOwnProperty("topic")).toBe(true)
-      expect(res.body.article.hasOwnProperty("created_at")).toBe(true)
-      expect(res.body.article.hasOwnProperty("votes")).toBe(true)
-      expect(res.body.article.hasOwnProperty("article_img_url")).toBe(true)
-    })
-  })
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.article.hasOwnProperty("author")).toBe(true);
+        expect(res.body.article.hasOwnProperty("title")).toBe(true);
+        expect(res.body.article.hasOwnProperty("article_id")).toBe(true);
+        expect(res.body.article.hasOwnProperty("body")).toBe(true);
+        expect(res.body.article.hasOwnProperty("topic")).toBe(true);
+        expect(res.body.article.hasOwnProperty("created_at")).toBe(true);
+        expect(res.body.article.hasOwnProperty("votes")).toBe(true);
+        expect(res.body.article.hasOwnProperty("article_img_url")).toBe(true);
+      });
+  });
   test("should respond with 404 error if the article_id cannot be found", () => {
-    return request(app).get("/api/articles/100").expect(404).then((res) => {
-      expect(res.body.msg).toBe("article cannot be found")
-    })
-  })
+    return request(app)
+      .get("/api/articles/100")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("article cannot be found");
+      });
+  });
   test("should respond with 400 error if the given article_id is not valid", () => {
-    return request(app).get("/api/articles/not-an-article").expect(400).then((res) => {
-      expect(res.body.msg).toBe("bad request")
-    })
-  })
-})
+    return request(app)
+      .get("/api/articles/not-an-article")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("bad request");
+      });
+  });
+});
+
+describe("GET /api/articles", () => {
+  test("should respond with status code 200 and an array of articles", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.article.length).toBe(13);
+        res.body.article.forEach((article) => {
+          expect(article.hasOwnProperty("author")).toBe(true);
+          expect(article.hasOwnProperty("title")).toBe(true);
+          expect(article.hasOwnProperty("article_id")).toBe(true);
+          expect(article.hasOwnProperty("body")).toBe(true);
+          expect(article.hasOwnProperty("topic")).toBe(true);
+          expect(article.hasOwnProperty("created_at")).toBe(true);
+          expect(article.hasOwnProperty("votes")).toBe(true);
+          expect(article.hasOwnProperty("article_img_url")).toBe(true);
+          expect(article.hasOwnProperty("comment_count")).toBe(true);
+        });
+      });
+  });
+  test("should be sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.article).toBeSorted({
+          key: "created_at",
+          descending: true,
+        });
+      });
+  });
+});
