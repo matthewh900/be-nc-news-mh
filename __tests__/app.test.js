@@ -100,3 +100,38 @@ describe("GET /api/articles", () => {
       });
   });
 });
+
+describe.only("GET /api/articles/:article_id/comments", () => {
+  test("should respond with status code 200 and an array of comments if there are any", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.comments.length).toBe(11);
+        res.body.comments.forEach((comment) => {
+          expect(comment.hasOwnProperty("comment_id")).toBe(true);
+          expect(comment.hasOwnProperty("votes")).toBe(true);
+          expect(comment.hasOwnProperty("created_at")).toBe(true);
+          expect(comment.hasOwnProperty("author")).toBe(true);
+          expect(comment.hasOwnProperty("body")).toBe(true);
+          expect(comment.hasOwnProperty("article_id")).toBe(true);
+        });
+      });
+  });
+  test("should respond with 404 error if given article_id can't be found", () => {
+    return request(app)
+      .get("/api/articles/100/comments")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("article cannot be found");
+      });
+  });
+  test("should respond with 400 error if article_id is not valid", () => {
+    return request(app)
+      .get("/api/articles/not-an-article/comments")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("bad request");
+      });
+  });
+});
