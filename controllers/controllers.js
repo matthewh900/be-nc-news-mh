@@ -1,5 +1,11 @@
 const comments = require("../db/data/test-data/comments");
-const { selectTopics, selectArticlesById, selectArticles, selectCommentsByArticleId } = require("../models/models");
+const {
+  selectTopics,
+  selectArticlesById,
+  selectArticles,
+  selectCommentsByArticleId,
+  insertComment,
+} = require("../models/models");
 
 exports.getTopics = (req, res) => {
   selectTopics().then((topic) => {
@@ -19,16 +25,39 @@ exports.getArticlesById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-    selectArticles(req.query).then((article) => {
-        res.status(200).send({article})
-    })
-}
+  selectArticles(req.query).then((article) => {
+    res.status(200).send({ article });
+  });
+};
 
 exports.getCommentsByArticleId = (req, res, next) => {
-    const {article_id} = req.params
-    selectCommentsByArticleId(article_id).then((comments) => {
-        res.status(200).send({comments})
-    }).catch((err) => {
-        next(err)
+  const { article_id } = req.params;
+  selectCommentsByArticleId(article_id)
+    .then((comments) => {
+      res.status(200).send({ comments });
     })
-}
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postComment = (req, res, next) => {
+  const newComment = req.body;
+  if (
+    newComment.author === undefined ||
+    newComment.body === undefined ||
+    typeof newComment.author !== "string" ||
+    typeof newComment.body !== "string"
+  ) {
+    res.status(400).send({ msg: "bad request" });
+  } else {
+    newComment.article_id = req.params.article_id;
+    insertComment(newComment)
+      .then(() => {
+        res.status(201).send({ comment: newComment });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  }
+};
