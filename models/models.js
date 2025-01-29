@@ -59,14 +59,23 @@ exports.selectCommentsByArticleId = (article_id) => {
     });
 };
 
-// if (checkArticleExists(article_id) === true) {
-//     return db
-//       .query("SELECT * FROM comments WHERE comments.article_id = $1", [
-//         article_id,
-//       ])
-//       .then((res) => {
-//         return res.rows;
-//       });
-//   } else {
-//     return Promise.reject({ status: 404, msg: "article cannot be found" });
-//   }
+exports.insertComment = (newComment) => {
+    const author = newComment.author
+    const body = newComment.body
+    const article_id = newComment.article_id
+    return checkArticleExists(article_id).then((res) => {
+        console.log(res)
+        if (res === true){
+            const date = new Date()
+            const votes = 0
+            const values = [body, author, article_id, votes, date]
+            const insertCommentSql = `INSERT INTO comments (body, author, article_id, votes, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING *`
+            return db.query(insertCommentSql, values).then(({rows}) => {
+                return rows
+            })
+        } else {
+            console.log(err)
+            return Promise.reject({ status: 404, msg: "article cannot be found" });
+        }
+    }).catch((err) => {})
+}

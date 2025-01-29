@@ -101,7 +101,7 @@ describe("GET /api/articles", () => {
   });
 });
 
-describe.only("GET /api/articles/:article_id/comments", () => {
+describe("GET /api/articles/:article_id/comments", () => {
   test("should respond with status code 200 and an array of comments if there are any", () => {
     return request(app)
       .get("/api/articles/1/comments")
@@ -134,4 +134,55 @@ describe.only("GET /api/articles/:article_id/comments", () => {
         expect(res.body.msg).toBe("bad request");
       });
   });
+});
+
+describe.only("POST /api/articles/:article_id/comments", () => {
+  test("should insert new comment and respond with status code 201", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ author: "butter_bridge", body: "some words" })
+      .expect(201)
+      .then((res) => {
+        const comment = res.body.comment;
+        expect(comment.author).toBe("butter_bridge");
+        expect(comment.body).toBe("some words");
+        expect(comment.article_id).toBe("1");
+      });
+  });
+  test("should respond with a 400 error if missing keys", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ author: "butter_bridge" })
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("bad request");
+      });
+  });
+  test("should respond with a 400 error if keys are not the correct type", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ author: "butter_bridge", body: 57 })
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("bad request");
+      });
+  });
+  // test("should respond with 404 error if given article_id can't be found", () => {
+  //   return request(app)
+  //     .post("/api/articles/100/comments")
+  //     .send({ author: "butter_bridge", body: "some words" })
+  //     .expect(404)
+  //     .then((res) => {
+  //       expect(res.body.msg).toBe("article cannot be found");
+  //     });
+  // });
+  // test("should respond with 400 error if article_id is not valid", () => {
+  //   return request(app)
+  //     .post("/api/articles/not-an-article/comments")
+  //     .send({ author: "butter_bridge", body: "some words" })
+  //     .expect(400)
+  //     .then((res) => {
+  //       expect(res.body.msg).toBe("bad request");
+  //     });
+  // });
 });
