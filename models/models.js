@@ -85,10 +85,34 @@ exports.updateVotes = (votesToAdd, article_id) => {
             const sqlValues = [votesToAdd, article_id]
             const sql = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`
             return db.query(sql, sqlValues).then(({rows}) => {
-                return rows
+                return rows[0]
             })
         } else {
             return Promise.reject({ status: 404, msg: "article cannot be found" });
+        }
+    })
+}
+
+function checkCommentExists(comment_id) {
+    const sql = format(
+      "SELECT * FROM comments WHERE comment_id = %L",
+      comment_id
+    );
+    return db.query(sql).then(({ rows }) => {
+      if (rows.length === 0) {
+        return false;
+      } else {
+        return true;
+      }
+    });
+  }
+
+exports.removeComment = (comment_id) => {
+    return checkCommentExists(comment_id).then((res) => {
+        if (res === true){
+            return db.query("DELETE FROM comments WHERE comment_id = $1", [comment_id])
+        } else {
+            return Promise.reject({ status: 404, msg: "comment cannot be found" });
         }
     })
 }

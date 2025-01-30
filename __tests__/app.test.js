@@ -194,7 +194,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send({ inc_votes: 1 })
       .expect(200)
       .then((res) => {
-        expect(res.body.article[0].votes).toBe(101);
+        expect(res.body.article.votes).toBe(101);
       });
   });
   test("should respond with 400 error if value given is not a number", () => {
@@ -225,3 +225,19 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+
+describe.only("DELETE /api/comments/:comment_id", () => {
+  test("should delete comment and respond with status code 204 and no content", () => {
+    return request(app).delete("/api/comments/1").expect(204)
+  })
+  test("should respond with 404 error if comment_id can't be found", () => {
+    return request(app).delete("/api/comments/100").expect(404).then((res) => {
+      expect(res.body.msg).toBe("comment cannot be found")
+    })
+  })
+  test("should respond with 400 error if comment_id is not valid", () => {
+    return request(app).delete("/api/comments/not-a-comment").expect(400).then((res) => {
+      expect(res.body.msg).toBe("bad request")
+    })
+  })
+})
