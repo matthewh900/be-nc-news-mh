@@ -7,6 +7,7 @@ const {
   insertComment,
   updateVotes,
   removeComment,
+  selectUsers,
 } = require("../models/models");
 
 exports.getTopics = (req, res) => {
@@ -85,4 +86,10 @@ exports.deleteComment = (req, res, next) => {
     .catch((err) => {
       next(err);
     });
+};
+
+exports.getUsers = (req, res) => {
+  selectUsers().then((user) => {
+    res.status(200).send({ user });
+  });
 };

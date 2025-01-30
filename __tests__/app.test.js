@@ -226,7 +226,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
-describe.only("DELETE /api/comments/:comment_id", () => {
+describe("DELETE /api/comments/:comment_id", () => {
   test("should delete comment and respond with status code 204 and no content", () => {
     return request(app).delete("/api/comments/1").expect(204)
   })
@@ -238,6 +238,19 @@ describe.only("DELETE /api/comments/:comment_id", () => {
   test("should respond with 400 error if comment_id is not valid", () => {
     return request(app).delete("/api/comments/not-a-comment").expect(400).then((res) => {
       expect(res.body.msg).toBe("bad request")
+    })
+  })
+})
+
+describe("GET /api/users", () => {
+  test("should respond with status code 200 and an array of users", () => {
+    return request(app).get("/api/users").expect(200).then((res) => {
+      expect(res.body.user.length).toBe(4)
+      res.body.user.forEach((user) => {
+        expect(user.hasOwnProperty("username")).toBe(true)
+        expect(user.hasOwnProperty("name")).toBe(true)
+        expect(user.hasOwnProperty("avatar_url")).toBe(true)
+      })
     })
   })
 })
