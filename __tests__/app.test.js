@@ -136,7 +136,7 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("POST /api/articles/:article_id/comments", () => {
+describe("POST /api/articles/:article_id/comments", () => {
   test("should insert new comment and respond with status code 201", () => {
     return request(app)
       .post("/api/articles/1/comments")
@@ -180,6 +180,45 @@ describe.only("POST /api/articles/:article_id/comments", () => {
     return request(app)
       .post("/api/articles/not-an-article/comments")
       .send({ author: "butter_bridge", body: "some words" })
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("bad request");
+      });
+  });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("should update a given articles votes property", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then((res) => {
+        expect(res.body.article[0].votes).toBe(101);
+      });
+  });
+  test("should respond with 400 error if value given is not a number", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "one" })
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("bad request");
+      });
+  });
+  test("should respond with 404 error if article_id can't be found", () => {
+    return request(app)
+      .patch("/api/articles/100")
+      .send({ inc_votes: 1 })
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("article cannot be found");
+      });
+  });
+  test("should respond with 400 error if article_id is not valid", () => {
+    return request(app)
+      .patch("/api/articles/not-an-article")
+      .send({ inc_votes: 1 })
       .expect(400)
       .then((res) => {
         expect(res.body.msg).toBe("bad request");

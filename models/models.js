@@ -1,3 +1,4 @@
+const { patchVotes } = require("../controllers/controllers");
 const db = require("../db/connection");
 const format = require("pg-format");
 
@@ -70,6 +71,20 @@ exports.insertComment = (newComment) => {
             const values = [body, author, article_id, votes, date]
             const insertCommentSql = `INSERT INTO comments (body, author, article_id, votes, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING *`
             return db.query(insertCommentSql, values).then(({rows}) => {
+                return rows
+            })
+        } else {
+            return Promise.reject({ status: 404, msg: "article cannot be found" });
+        }
+    })
+}
+
+exports.updateVotes = (votesToAdd, article_id) => {
+    return checkArticleExists(article_id).then((res) => {
+        if(res === true){
+            const sqlValues = [votesToAdd, article_id]
+            const sql = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`
+            return db.query(sql, sqlValues).then(({rows}) => {
                 return rows
             })
         } else {
