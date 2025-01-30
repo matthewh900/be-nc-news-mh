@@ -167,22 +167,22 @@ describe.only("POST /api/articles/:article_id/comments", () => {
         expect(res.body.msg).toBe("bad request");
       });
   });
-  // test("should respond with 404 error if given article_id can't be found", () => {
-  //   return request(app)
-  //     .post("/api/articles/100/comments")
-  //     .send({ author: "butter_bridge", body: "some words" })
-  //     .expect(404)
-  //     .then((res) => {
-  //       expect(res.body.msg).toBe("article cannot be found");
-  //     });
-  // });
-  // test("should respond with 400 error if article_id is not valid", () => {
-  //   return request(app)
-  //     .post("/api/articles/not-an-article/comments")
-  //     .send({ author: "butter_bridge", body: "some words" })
-  //     .expect(400)
-  //     .then((res) => {
-  //       expect(res.body.msg).toBe("bad request");
-  //     });
-  // });
+  test("should respond with 404 error if given article_id can't be found", () => {
+    return request(app)
+      .post("/api/articles/100/comments")
+      .send({ author: "butter_bridge", body: "some words" })
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("article cannot be found");
+      });
+  });
+  test("should respond with 400 error if article_id is not valid", () => {
+    return request(app)
+      .post("/api/articles/not-an-article/comments")
+      .send({ author: "butter_bridge", body: "some words" })
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("bad request");
+      });
+  });
 });

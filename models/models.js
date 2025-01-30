@@ -64,7 +64,6 @@ exports.insertComment = (newComment) => {
     const body = newComment.body
     const article_id = newComment.article_id
     return checkArticleExists(article_id).then((res) => {
-        console.log(res)
         if (res === true){
             const date = new Date()
             const votes = 0
@@ -74,8 +73,7 @@ exports.insertComment = (newComment) => {
                 return rows
             })
         } else {
-            console.log(err)
             return Promise.reject({ status: 404, msg: "article cannot be found" });
         }
-    }).catch((err) => {})
+    })
 }
