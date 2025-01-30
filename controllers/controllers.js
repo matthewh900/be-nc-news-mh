@@ -30,6 +30,9 @@ exports.getArticlesById = (req, res, next) => {
 exports.getArticles = (req, res, next) => {
   selectArticles(req.query).then((article) => {
     res.status(200).send({ article });
+  }).catch((err) => {
+    console.log(err)
+    next(err)
   });
 };
 

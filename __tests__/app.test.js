@@ -99,7 +99,7 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  describe("queries", () => {
+  describe.only("queries", () => {
     test("should be sorted by date in ascending order", () => {
       return request(app)
         .get("/api/articles?sort_by=created_at&order=asc")
@@ -155,6 +155,11 @@ describe("GET /api/articles", () => {
           });
         });
     });
+    test("should respond with 400 error if asked to sort by a key that doesn't exist", () => {
+      return request(app).get("/api/articles?sort_by=size&order=asc").expect(400).then((res) => {
+        expect(res.body.msg).toBe("bad request")
+      })
+    })
   });
 });
 
