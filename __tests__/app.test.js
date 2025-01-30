@@ -99,6 +99,63 @@ describe("GET /api/articles", () => {
         });
       });
   });
+  describe("queries", () => {
+    test("should be sorted by date in ascending order", () => {
+      return request(app)
+        .get("/api/articles?sort_by=created_at&order=asc")
+        .expect(200)
+        .then((res) => {
+          expect(res.body.article).toBeSorted({
+            key: "created_at",
+            ascending: true,
+          });
+        });
+    });
+    test("should be sorted by votes in ascending order", () => {
+      return request(app)
+        .get("/api/articles?sort_by=votes&order=asc")
+        .expect(200)
+        .then((res) => {
+          expect(res.body.article).toBeSorted({
+            key: "votes",
+            ascending: true,
+          });
+        });
+    });
+    test("should be sorted by votes in descending order", () => {
+      return request(app)
+        .get("/api/articles?sort_by=votes&order=desc")
+        .expect(200)
+        .then((res) => {
+          expect(res.body.article).toBeSorted({
+            key: "votes",
+            descending: true,
+          });
+        });
+    });
+    test("should be sorted by article_id in ascending order", () => {
+      return request(app)
+        .get("/api/articles?sort_by=article_id&order=asc")
+        .expect(200)
+        .then((res) => {
+          expect(res.body.article).toBeSorted({
+            key: "article_id",
+            ascending: true,
+          });
+        });
+    });
+    test("should be sorted by article_id in descending order", () => {
+      return request(app)
+        .get("/api/articles?sort_by=article_id&order=desc")
+        .expect(200)
+        .then((res) => {
+          expect(res.body.article).toBeSorted({
+            key: "article_id",
+            descending: true,
+          });
+        });
+    });
+  });
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -228,29 +285,38 @@ describe("PATCH /api/articles/:article_id", () => {
 
 describe("DELETE /api/comments/:comment_id", () => {
   test("should delete comment and respond with status code 204 and no content", () => {
-    return request(app).delete("/api/comments/1").expect(204)
-  })
+    return request(app).delete("/api/comments/1").expect(204);
+  });
   test("should respond with 404 error if comment_id can't be found", () => {
-    return request(app).delete("/api/comments/100").expect(404).then((res) => {
-      expect(res.body.msg).toBe("comment cannot be found")
-    })
-  })
+    return request(app)
+      .delete("/api/comments/100")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("comment cannot be found");
+      });
+  });
   test("should respond with 400 error if comment_id is not valid", () => {
-    return request(app).delete("/api/comments/not-a-comment").expect(400).then((res) => {
-      expect(res.body.msg).toBe("bad request")
-    })
-  })
-})
+    return request(app)
+      .delete("/api/comments/not-a-comment")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("bad request");
+      });
+  });
+});
 
 describe("GET /api/users", () => {
   test("should respond with status code 200 and an array of users", () => {
-    return request(app).get("/api/users").expect(200).then((res) => {
-      expect(res.body.user.length).toBe(4)
-      res.body.user.forEach((user) => {
-        expect(user.hasOwnProperty("username")).toBe(true)
-        expect(user.hasOwnProperty("name")).toBe(true)
-        expect(user.hasOwnProperty("avatar_url")).toBe(true)
-      })
-    })
-  })
-})
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.user.length).toBe(4);
+        res.body.user.forEach((user) => {
+          expect(user.hasOwnProperty("username")).toBe(true);
+          expect(user.hasOwnProperty("name")).toBe(true);
+          expect(user.hasOwnProperty("avatar_url")).toBe(true);
+        });
+      });
+  });
+});

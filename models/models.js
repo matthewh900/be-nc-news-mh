@@ -20,13 +20,30 @@ exports.selectArticlesById = (article_id) => {
     });
 };
 
-exports.selectArticles = () => {
-  let sql =
-    "SELECT articles.*, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id";
+exports.selectArticles = (queries) => {
+    const sort_by = queries.sort_by
+    const order = queries.order
 
-  return db.query(`${sql} ORDER BY created_at DESC`).then(({ rows }) => {
-    return rows;
-  });
+    let sql = "SELECT articles.*, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id"
+    const args = []
+   
+    if (sort_by){
+        const greenList = ["article_id", "created_at", "votes", "comment_count"]
+        if (greenList.includes(sort_by)){
+            sql += ` ORDER BY ${sort_by}`
+        }
+        if (order === "desc" || order === "asc"){
+            sql += ` ${order}`
+        }
+    } else {
+        return db.query(`${sql} ORDER BY created_at DESC`).then(({rows}) => {
+            return rows
+        })
+    }
+    
+    return db.query(sql, args).then(({rows}) => {
+        return rows
+    })
 };
 
 function checkArticleExists(article_id) {
