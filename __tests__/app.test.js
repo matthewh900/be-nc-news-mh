@@ -34,7 +34,7 @@ describe("GET /api/topics", () => {
   });
 });
 
-describe.only("GET /api/articles/:article_id", () => {
+describe("GET /api/articles/:article_id", () => {
   test("should respond with status code 200 and article with matching article_id property", () => {
     return request(app)
       .get("/api/articles/1")
