@@ -99,7 +99,7 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  describe.only("queries", () => {
+  describe("queries", () => {
     test("should be sorted by date in ascending order", () => {
       return request(app)
         .get("/api/articles?sort_by=created_at&order=asc")
@@ -158,6 +158,19 @@ describe("GET /api/articles", () => {
     test("should respond with 400 error if asked to sort by a key that doesn't exist", () => {
       return request(app).get("/api/articles?sort_by=size&order=asc").expect(400).then((res) => {
         expect(res.body.msg).toBe("bad request")
+      })
+    })
+    test("should respond with array of articles whose topic property match the given topic", () => {
+      return request(app).get("/api/articles?topic=mitch").expect(200).then((res) => {
+        expect(res.body.article.length).toBe(12)
+        res.body.article.forEach((article) => {
+          expect(article.topic).toBe("mitch")
+        })
+      })
+    })
+    test("should respond with 404 error if topic given can't be found", () => {
+      return request(app).get("/api/articles?topic=brownies").expect(404).then((res) => {
+        expect(res.body.msg).toBe("topic cannot be found")
       })
     })
   });
