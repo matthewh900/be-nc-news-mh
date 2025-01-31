@@ -48,6 +48,7 @@ describe("GET /api/articles/:article_id", () => {
         expect(res.body.article.hasOwnProperty("created_at")).toBe(true);
         expect(res.body.article.hasOwnProperty("votes")).toBe(true);
         expect(res.body.article.hasOwnProperty("article_img_url")).toBe(true);
+        expect(res.body.article.hasOwnProperty("comment_count")).toBe(true)
       });
   });
   test("should respond with 404 error if the article_id cannot be found", () => {
