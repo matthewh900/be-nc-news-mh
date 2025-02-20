@@ -94,7 +94,7 @@ exports.selectCommentsByArticleId = (article_id) => {
     .then((res) => {
       if (res === true) {
         return db.query(
-          "SELECT * FROM comments WHERE comments.article_id = $1",
+          "SELECT * FROM comments WHERE comments.article_id = $1 ORDER BY created_at DESC",
           [article_id]
         );
       } else {
