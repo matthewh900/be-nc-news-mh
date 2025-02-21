@@ -184,7 +184,7 @@ describe("GET /api/articles", () => {
     })
   })
   test("should respond with 404 error if author given can't be found", () => {
-    return request(app).get("/api/articles?author=butter_bridge").expect(404).then((res) => {
+    return request(app).get("/api/articles?author=roald_dahl").expect(404).then((res) => {
       expect(res.body.msg).toBe("author cannot be found")
     })
   })

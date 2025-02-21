@@ -46,6 +46,7 @@ exports.selectArticles = (queries) => {
   const sort_by = queries.sort_by;
   const order = queries.order;
   const topic = queries.topic;
+  const author = queries.author
 
   let sql =
     "SELECT articles.*, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id";
@@ -79,7 +80,7 @@ exports.selectArticles = (queries) => {
             return rows;
           });
       } else {
-        return Promise.reject({ status: 404, msg: "topic cannot be found" });
+        return Promise.reject({ status: 404, msg: "author cannot be found" });
       }
     });
   }
