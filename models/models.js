@@ -31,6 +31,17 @@ function checkTopicExists(topic) {
   });
 }
 
+function checkAuthorExists(author) {
+  const sql = format("SELECT * FROM users WHERE username = %L", author);
+  return db.query(sql).then(({ rows }) => {
+    if (rows.length === 0) {
+      return false;
+    } else {
+      return true;
+    }
+  });
+}
+
 exports.selectArticles = (queries) => {
   const sort_by = queries.sort_by;
   const order = queries.order;
@@ -46,6 +57,23 @@ exports.selectArticles = (queries) => {
           .query(
             "SELECT articles.*, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id WHERE articles.topic = $1 GROUP BY articles.article_id",
             [topic]
+          )
+          .then(({ rows }) => {
+            return rows;
+          });
+      } else {
+        return Promise.reject({ status: 404, msg: "topic cannot be found" });
+      }
+    });
+  }
+
+  if (author) {
+    return checkAuthorExists(author).then((res) => {
+      if (res === true) {
+        return db
+          .query(
+            "SELECT articles.*, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id WHERE articles.author = $1 GROUP BY articles.article_id",
+            [author]
           )
           .then(({ rows }) => {
             return rows;

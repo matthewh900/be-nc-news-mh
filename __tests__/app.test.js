@@ -175,6 +175,19 @@ describe("GET /api/articles", () => {
       })
     })
   });
+  test("should respond with array of articles whose author property match the given author", () => {
+    return request(app).get("/api/articles?author=butter_bridge").expect(200).then((res) => {
+      expect(res.body.article.length).toBe(4)
+      res.body.article.forEach((article) => {
+        expect(article.author).toBe("butter_bridge")
+      })
+    })
+  })
+  test("should respond with 404 error if author given can't be found", () => {
+    return request(app).get("/api/articles?author=butter_bridge").expect(404).then((res) => {
+      expect(res.body.msg).toBe("author cannot be found")
+    })
+  })
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
